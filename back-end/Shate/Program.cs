@@ -1,7 +1,6 @@
 using Shate.DAL;
 using Shate.DAL.EF;
 using Shate.DAL.Interfaces;
-using Shate.DAL.Services;
 
 namespace Back_end_mvc
 {
@@ -17,7 +16,7 @@ namespace Back_end_mvc
 			// Add services to the container.
 			builder.Services.AddControllers();
 			builder.Services.AddDbContext<PostgreDbContext>();
-			builder.Services.AddSingleton<IUnitOfWork, UnitOfWorkService>();
+			builder.Services.AddScoped<UnitOfWork>();
 
 
 			var app = builder.Build();

@@ -5,16 +5,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Shate.DAL;
 using Shate.DAL.EF;
 using Shate.DAL.Entities;
+using Shate.DAL.Repositorys;
 
 namespace Back_end_mvc.Controllers
 {
     public class ComputersController : Controller
     {
-        private readonly PostgreDbContext _context;
+        private readonly ComputerRepository _context;
 
-        public ComputersController(PostgreDbContext context)
+        public ComputersController(ComputerRepository context)
         {
             _context = context;
         }
@@ -22,21 +24,21 @@ namespace Back_end_mvc.Controllers
         // GET: Computers
         public async Task<IActionResult> Index()
         {
-              return _context.Computers != null ? 
-                          Json(await _context.Computers.ToListAsync()) :
+              return _context != null ? 
+                          Json(_context.FindAll()) :
                           Problem("Entity set 'PostgreDbContext.Computers'  is null.");
         }
 
         // GET: Computers/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null || _context.Computers == null)
+            if (id == null || _context == null)
             {
                 return NotFound();
             }
 
-            var computer = await _context.Computers
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var computer = _context
+                .FindByCondition(m => m.Id == id);
             if (computer == null)
             {
                 return NotFound();
@@ -61,8 +63,8 @@ namespace Back_end_mvc.Controllers
             if (ModelState.IsValid)
             {
                 computer.Id = Guid.NewGuid();
-                _context.Add(computer);
-                await _context.SaveChangesAsync();
+                _context.AddRecord(computer);
+                _context.UnitOfWork.Save();
 				return Ok();
             }
             else
@@ -74,12 +76,12 @@ namespace Back_end_mvc.Controllers
         // GET: Computers/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null || _context.Computers == null)
+            if (id == null || _context == null)
             {
                 return NotFound();
             }
 
-            var computer = await _context.Computers.FindAsync(id);
+            var computer = _context.FindByCondition(e => e.Id == id);
             if (computer == null)
             {
                 return NotFound();
@@ -103,8 +105,8 @@ namespace Back_end_mvc.Controllers
             {
                 try
                 {
-                    _context.Update(computer);
-                    await _context.SaveChangesAsync();
+                    _context.UpdateRecord(computer);
+                    _context.UnitOfWork.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -125,13 +127,13 @@ namespace Back_end_mvc.Controllers
         // GET: Computers/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null || _context.Computers == null)
+            if (id == null || _context == null)
             {
                 return NotFound();
             }
 
-            var computer = await _context.Computers
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var computer = _context
+                .FindByCondition(m => m.Id == id);
             if (computer == null)
             {
                 return NotFound();
@@ -145,23 +147,23 @@ namespace Back_end_mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (_context.Computers == null)
+            if (_context.UnitOfWork.Save == null)
             {
                 return Problem("Entity set 'PostgreDbContext.Computers'  is null.");
             }
-            var computer = await _context.Computers.FindAsync(id);
+            var computer = _context.FindByCondition(e => e.Id == id).FirstOrDefault();
             if (computer != null)
             {
-                _context.Computers.Remove(computer);
+                _context.DeleteRecord(computer);
             }
             
-            await _context.SaveChangesAsync();
+            _context.UnitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ComputerExists(Guid id)
         {
-          return (_context.Computers?.Any(e => e.Id == id)).GetValueOrDefault();
+	        return (_context?.Table.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

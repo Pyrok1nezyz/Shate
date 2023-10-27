@@ -2,36 +2,36 @@
 using Microsoft.EntityFrameworkCore;
 using Shate.DAL;
 using Shate.DAL.Entities;
-using Shate.DAL.Services;
+using Shate.DAL.Repositorys;
 
 namespace Back_end_mvc.Controllers
 {
     public class CategoriesController : Controller
     {
-	    private UnitOfWork _context;
+	    private CategoryRepository _context;
 
-	    public CategoriesController(UnitOfWorkService unitOfWorkService)
+	    public CategoriesController(CategoryRepository context)
 	    {
-		    _context = unitOfWorkService._context;
+		    _context = context;
 	    }
 
 		// GET: Categories
 		public async Task<IActionResult> Index()
         {
-              return _context.Categories != null ? 
-                          Json(_context.Categories.FindAll()) :
+              return _context != null ? 
+                          Json(_context.FindAll()) :
                           Problem("Entity set 'PostgreDbContext.Categories'  is null.");
         }
 
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _context == null)
             {
                 return NotFound();
             }
 
-            var category = _context.Categories
+            var category = _context
                 .FindByCondition(e => e.Id == id);
             if (category == null)
             {
@@ -56,7 +56,7 @@ namespace Back_end_mvc.Controllers
         {
             if (ModelState.IsValid)
             {
-	            await _context.Categories.AddRecord(category);
+	            await _context.AddRecord(category);
                 return RedirectToAction(nameof(Index));
             }
             return Json(category);
@@ -65,12 +65,12 @@ namespace Back_end_mvc.Controllers
         // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _context == null)
             {
                 return NotFound();
             }
 
-            var category = _context.Categories.FindByCondition(e => e.Id == id);
+            var category = _context.FindByCondition(e => e.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -94,8 +94,8 @@ namespace Back_end_mvc.Controllers
             {
                 try
                 {
-                    _context.Categories.UpdateRecord(category);
-                    _context.Save();
+                    _context.UpdateRecord(category);
+                    _context.UnitOfWork.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -116,12 +116,12 @@ namespace Back_end_mvc.Controllers
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _context == null)
             {
                 return NotFound();
             }
 
-            var category = _context.Categories
+            var category = _context
 	            .FindByCondition(e => e.Id == id);
             if (category == null)
             {
@@ -136,24 +136,24 @@ namespace Back_end_mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (_context.Categories == null)
+            if (_context == null)
             {
                 return Problem("Entity set 'PostgreDbContext.Categories'  is null.");
             }
 
-            var category = await _context.Categories.FindByCondition(e => e.Id == id).FirstOrDefaultAsync();
+            var category = await _context.FindByCondition(e => e.Id == id).FirstOrDefaultAsync();
             if (category != null)
             {
-                _context.Categories.DeleteRecord(category);
+                _context.DeleteRecord(category);
             }
 
-            _context.Save();
+            _context.UnitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(Guid id)
         {
-          return (_context.Categories?.Table.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context?.Table.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

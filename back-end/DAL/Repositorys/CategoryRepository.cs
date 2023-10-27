@@ -6,7 +6,7 @@ namespace Shate.DAL.Repositorys;
 
 public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
 {
-	public CategoryRepository(PostgreDbContext dbContext) : base(dbContext)
+	public CategoryRepository(PostgreDbContext dbContext, UnitOfWork unitOfWork) : base(dbContext, unitOfWork)
 	{
 	}
 }

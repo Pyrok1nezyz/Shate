@@ -11,14 +11,16 @@ public abstract class BaseRepository<T> : IDisposable, IBaseRepository<T> where 
 {
 	private PostgreDbContext _context;
 	private DbSet<T> _table;
+	public UnitOfWork UnitOfWork;
 	protected PostgreDbContext Context => _context;
 
 	public IQueryable<T> Table => _table;
 
-	public BaseRepository(PostgreDbContext dbContext)
+	public BaseRepository(PostgreDbContext dbContext, UnitOfWork unitOfWork)
 	{
 		_context = dbContext;
 		_table = _context.Set<T>();
+		UnitOfWork = unitOfWork;
 	}
 
 	public IQueryable<T> FindAll() => _table.AsNoTracking();

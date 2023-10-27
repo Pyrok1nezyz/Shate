@@ -7,7 +7,7 @@ namespace Shate.DAL.Repositorys;
 
 public class ItemRepository : BaseRepository<Item>, IItemRepository
 {
-	public ItemRepository(PostgreDbContext dbContext) : base(dbContext)
+	public ItemRepository(PostgreDbContext dbContext, UnitOfWork unitOfWork) : base(dbContext, unitOfWork)
 	{
 	}
 }

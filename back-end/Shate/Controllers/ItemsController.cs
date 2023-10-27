@@ -7,14 +7,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Shate.DAL.EF;
 using Shate.DAL.Entities;
+using Shate.DAL.Repositorys;
 
 namespace Back_end_mvc.Controllers
 {
     public class ItemsController : Controller
     {
-        private readonly PostgreDbContext _context;
+        private readonly ItemRepository _context;
 
-        public ItemsController(PostgreDbContext context)
+        public ItemsController(ItemRepository context)
         {
             _context = context;
         }
@@ -22,20 +23,20 @@ namespace Back_end_mvc.Controllers
         // GET: Items
         public async Task<IActionResult> Index()
         { 
-	        return _context.Items != null ? 
-                           Json( await _context.Items.Include(e => e.MainCategory).Include(e => e.SubCategory).ToListAsync()) :
+	        return _context != null ? 
+                           Json( await _context.Table.Include(e => e.MainCategory).Include(e => e.SubCategory).ToListAsync()) :
                            Problem("Entity set 'PostgreDbContext.Items'  is null.");
         }
 
         // GET: Items/Details/5
         public async Task<IActionResult> Details(Guid id)
         {
-            if (id != Guid.Empty || _context.Items == null)
+            if (id != Guid.Empty || _context.Table == null)
             {
                 return NotFound();
             }
 
-            var item = await _context.Items.Include(e => e.MainCategory).Include(e => e.SubCategory)
+            var item = await _context.Table.Include(e => e.MainCategory).Include(e => e.SubCategory)
                 .FirstOrDefaultAsync(m => m.Id.Equals(id));
             if (item == null)
             {
@@ -58,10 +59,10 @@ namespace Back_end_mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Price,Count,IsForceBuy,CountryId,IsDiscounted,IsDeleted,IsHided,CustomerId,id")] Item item)
         {
-            if (ModelState.IsValid && !_context.Items.Any(e => e.Id == item.Id))
+            if (ModelState.IsValid && !_context.Table.Any(e => e.Id == item.Id))
             {
-                _context.Add(item);
-                await _context.SaveChangesAsync();
+                _context.AddRecord(item);
+                _context.UnitOfWork.Save();
                 return Ok();
             }
             else
@@ -92,8 +93,8 @@ namespace Back_end_mvc.Controllers
             {
                 try
                 {
-                    _context.Update(item);
-                    await _context.SaveChangesAsync();
+                    _context.UpdateRecord(item);
+                    _context.UnitOfWork.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -115,12 +116,12 @@ namespace Back_end_mvc.Controllers
         // GET: Items/Delete/5
         public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == Guid.Empty || _context.Items == null)
+            if (id == Guid.Empty || _context.Table == null)
             {
                 return NotFound();
             }
 
-			var item = await _context.Items.Include(e => e.MainCategory).Include(e => e.SubCategory)
+			var item = await _context.Table.Include(e => e.MainCategory).Include(e => e.SubCategory)
 				.FirstOrDefaultAsync(m => m.Id.Equals(id));
 
 			if (item == null)
@@ -136,23 +137,23 @@ namespace Back_end_mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (_context.Items == null)
+            if (_context.Table == null)
             {
                 return Problem("Entity set 'PostgreDbContext.Items'  is null.");
             }
-            var item = await _context.Items.FindAsync(id);
+            var item = _context.FindByCondition(e => e.Id == id).FirstOrDefault();
             if (item != null)
             {
-                _context.Items.Remove(item);
+                _context.DeleteRecord(item);
             }
             
-            await _context.SaveChangesAsync();
+            _context.UnitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ItemExists(Guid id)
         {
-          return (_context.Items?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Table?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
