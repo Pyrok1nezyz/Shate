@@ -3,18 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shate", "Back-end mvc\Shate.csproj", "{DB135BFC-8319-4BC9-8CFE-15CCA515290F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shate", "back-end\Shate\Shate.csproj", "{DB135BFC-8319-4BC9-8CFE-15CCA515290F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{09756A39-B144-4BA6-AE49-F48C72E7CA00} = {09756A39-B144-4BA6-AE49-F48C72E7CA00}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shate.DAL", "DAL\Shate.DAL.csproj", "{09756A39-B144-4BA6-AE49-F48C72E7CA00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shate.DAL", "back-end\DAL\Shate.DAL.csproj", "{09756A39-B144-4BA6-AE49-F48C72E7CA00}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Back-end", "Back-end", "{876534B4-8002-4600-8A5A-A48F9889B6B9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Front-end", "Front-end", "{5576BE07-9C06-413C-AF33-196E70DA1BD9}"
 EndProject
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "Shate.Front", "Shate.Front\Shate.Front.njsproj", "{004DD4DA-1496-4278-8FC8-F3EAB6BF703A}"
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "Shate.Front", "front-end\Shate.Front\Shate.Front.njsproj", "{004DD4DA-1496-4278-8FC8-F3EAB6BF703A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReactJS", "ReactJS", "{C6996B64-C7A4-4034-B1E9-118A5A6E25AE}"
 EndProject
