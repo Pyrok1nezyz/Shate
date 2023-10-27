@@ -1,11 +1,10 @@
 ﻿using Shate.DAL.EF;
-using Shate.DAL.Entities;
-using Shate.DAL.Interfaces;
 using Shate.DAL.Repositorys;
+using Shate.DAL.Services;
 
 namespace Shate.DAL;
 
-public class UnitOfWork : IDisposable
+public class UnitOfWork : IDisposable, IUnitOfWork
 {
     private PostgreDbContext db = new();
     private ItemRepository itemRepository;
@@ -64,5 +63,10 @@ public class UnitOfWork : IDisposable
     {
         Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    public UnitOfWork GetUnitOfWork()
+    {
+	    return this;
     }
 }

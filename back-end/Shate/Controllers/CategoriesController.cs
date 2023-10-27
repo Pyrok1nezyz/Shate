@@ -6,12 +6,22 @@ using Shate.DAL.Services;
 
 namespace Back_end_mvc.Controllers
 {
-    public class CategoriesController : Controller, IRepositoryService
+    public class CategoriesController : Controller, IUnitOfWork
     {
 	    private UnitOfWork _context;
 
-        // GET: Categories
-        public async Task<IActionResult> Index()
+	    public CategoriesController(UnitOfWork context)
+	    {
+            _context = context;
+	    }
+
+	    public UnitOfWork GetUnitOfWork()
+	    {
+		    return HttpContext.RequestServices.GetService<UnitOfWork>();
+	    }
+
+		// GET: Categories
+		public async Task<IActionResult> Index()
         {
               return _context.Categories != null ? 
                           Json(_context.Categories.FindAll()) :
