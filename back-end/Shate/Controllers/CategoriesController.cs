@@ -6,18 +6,13 @@ using Shate.DAL.Services;
 
 namespace Back_end_mvc.Controllers
 {
-    public class CategoriesController : Controller, IUnitOfWork
+    public class CategoriesController : Controller
     {
 	    private UnitOfWork _context;
 
-	    public CategoriesController(UnitOfWork context)
+	    public CategoriesController(UnitOfWorkService unitOfWorkService)
 	    {
-            _context = context;
-	    }
-
-	    public UnitOfWork GetUnitOfWork()
-	    {
-		    return HttpContext.RequestServices.GetService<UnitOfWork>();
+		    _context = unitOfWorkService._context;
 	    }
 
 		// GET: Categories
